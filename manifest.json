@@ -7,7 +7,6 @@
   "content_scripts": [
     {
       "matches": ["https://twitter.com/*"],
-      "js": ["like2sushi.js"],
       "css": ["like2sushi.css"]
     }
   ],
