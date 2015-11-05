@@ -98,6 +98,13 @@ function overrideNotifyPageSushi(){
 					// 開いた瞬間に表示されているリストの更新
 					update($$("#stream-items-id .stream-item-content"));
 					
+					// 既に登録されていたら再登録する
+					if(streamObserver){
+						streamObserver.disconnect();
+						streamObserver = null;
+						streamObserver = registerStreamObserver();
+					}
+					
 					// 自分自身の監視解除
 					timelineObserver.disconnect();
 					timelineObserver = null;
