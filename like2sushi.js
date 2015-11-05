@@ -11,6 +11,9 @@ task(function*(){
 	
 	// 通知ページに表示されるいいねに対する上書き処理
 	overrideNotifyPageSushi();
+	
+	// お気に入り一覧ページに対する上書き処理
+	overrideFavoriteListPage();
 }());
 
 // URLが変化した際に通知するmessageを登録する
@@ -149,6 +152,44 @@ function overrideNotifyPageSushi(){
 				});
 			}
 		});
+	}
+}
+
+
+// お気に入り一覧ページに対する上書き処理
+function overrideFavoriteListPage(){
+	if(location.pathname === "/favorites"){
+		// アクセス時にfavoritesのページにいる時は素直に更新
+		update();
+	}
+	else{
+		var headerObserver = null;
+		
+		// アクセス時にnotificationsのページに居ない場合は、ページ移動を監視して、移動した瞬間に更新
+		window.addEventListener("message",function(eve){
+			if(eve.data !== "URLChanged") return; // 関係ないメッセージはスルー
+			if(eve.origin !== "https://twitter.com") return; // 関係ない発生元はスルー
+			if(location.pathname !== "/favorites") return;
+			
+			if(!headerObserver) headerObserver = $("#content-main-heading")[_.createObserver]((mutations)=>{
+				// 通知ページ以外にいる時は更新処理を行わせない
+				if(location.pathname !== "/favorites") return;
+				
+				for(var mutation of mutations){
+					update(mutation.addedNodes);
+				}
+				
+				// 1回限りで終了する
+				headerObserver.disconnect();
+				headerObserver = null;
+			}, {attributes: false, childList: false, characterData: true});
+		},false);
+	}
+	
+	function update(){
+		if(location.pathname !== "/favorites") return;
+		
+		$("#content-main-heading")[_.text] = "すし";
 	}
 }
 
