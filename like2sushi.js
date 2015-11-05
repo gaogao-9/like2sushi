@@ -62,7 +62,7 @@ function overrideNotifyPageSushi(){
 	var timelineObserver = null;
 	var streamObserver   = null;
 	
-	if(~location.pathname.indexOf("i/notifications")){
+	if(location.pathname === "/i/notifications"){
 		// アクセス時にnotificationsのページにいる時は素直に登録
 		streamObserver = registerStreamObserver();
 	}
@@ -84,7 +84,12 @@ function overrideNotifyPageSushi(){
 				return;
 			}
 			
-			// 各種オブザーバーを登録する
+			// 登録されて無ければ新たに追加されるリストの監視
+			if(!streamObserver){
+				streamObserver = registerStreamObserver();
+			}
+			
+			// 登録されて無ければ新たに追加されるリストの監視
 			if(!timelineObserver){
 				timelineObserver = $("#timeline")[_.createObserver]((mutations)=>{
 					// 通知ページ以外にいる時は更新処理を行わせない
@@ -93,13 +98,10 @@ function overrideNotifyPageSushi(){
 					// 開いた瞬間に表示されているリストの更新
 					update($$("#stream-items-id .stream-item-content"));
 					
-					// 登録されて無ければ新たに追加されるリストの監視
-					if(!streamObserver) streamObserver = registerStreamObserver();
-					
 					// 自分自身の監視解除
 					timelineObserver.disconnect();
 					timelineObserver = null;
-				}, {attributes: false, childList: true, characterData: false, subtree: true});
+				}, {attributes: true, childList: true, characterData: false, subtree: true});
 			}
 		},false);
 	}
