@@ -171,24 +171,21 @@ function overrideFavoriteListPage(){
 			if(eve.origin !== "https://twitter.com") return; // 関係ない発生元はスルー
 			if(location.pathname !== "/favorites") return;
 			
-			if(!headerObserver) headerObserver = $("#content-main-heading")[_.createObserver]((mutations)=>{
+			if(!headerObserver) headerObserver = $("#page-container")[_.createObserver]((mutations)=>{
 				// 通知ページ以外にいる時は更新処理を行わせない
 				if(location.pathname !== "/favorites") return;
 				
-				for(var mutation of mutations){
-					update(mutation.addedNodes);
-				}
+				update();
 				
 				// 1回限りで終了する
 				headerObserver.disconnect();
 				headerObserver = null;
-			}, {attributes: false, childList: false, characterData: true});
+			}, {attributes: false, childList: true, characterData: false});
 		},false);
 	}
 	
 	function update(){
 		if(location.pathname !== "/favorites") return;
-		
 		$("#content-main-heading")[_.text] = "すし";
 	}
 }
